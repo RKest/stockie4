@@ -1,0 +1,1 @@
+export default ["prep", "train", "run", "show", "quit"] as const;
