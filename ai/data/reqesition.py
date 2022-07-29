@@ -5,7 +5,7 @@ from random import randint
 
 from tqdm import tqdm
 from constants.paths import DATA_PATH, TEST_DATA_PATH, TRAIN_DATA_PATH
-from data.tensorisation import tensorise_data_fast
+from data.tensorisation import tensorise_data
 from data.balancing import SlopeDirBalancer
 from numba import njit
 import numpy as np
@@ -49,7 +49,7 @@ def load_slope_sequential(train=False):
                     xpp = make_training_data(xpp)
                     s_balancer.appraise(xpp, data)
 
-            data = tensorise_data_fast(data)
+            data = tensorise_data(data)
             loader_list.append(data)
             s_balancer.clear()
             data = []

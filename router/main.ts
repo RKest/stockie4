@@ -3,7 +3,7 @@ import { __rootDir } from "../app.ts";
 import { io } from "../functional/io.ts";
 import { avgerageArray } from "../functional/miscellaneous.ts";
 
-const DATA_POINTS_AMOUNT = 150;
+const DATA_POINTS_AMOUNT = 100;
 const N_MODEL_GROUPS = 4;
 const INFORMATION_OFFSET = 3;
 

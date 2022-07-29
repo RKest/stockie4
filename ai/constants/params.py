@@ -22,7 +22,7 @@ DEFAULT_MODELING_PARAMS = {
 
 DEFAULT_TRAIN_PARAMS = {
     'batch_size': 64,
-    'shuffle': False,
+    'shuffle': True,
     'num_workers': 6
 }
 

@@ -1,4 +1,5 @@
+.vscode
 */**/_*
 /data/5_us_txt*
 /ai/nets/cps
-.vscode
+/models/*

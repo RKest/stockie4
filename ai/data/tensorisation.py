@@ -17,7 +17,5 @@ class Dataset(torch.utils.data.Dataset):
 
 def tensorise_data(data, params=DEFAULT_TRAIN_PARAMS):
     ds = Dataset(np.array([d[0] for d in data]), np.array([d[1] for d in data]))
-    sampler = torch.utils.data.RandomSampler(data_source=ds)
-    return torch.utils.data.DataLoader(ds, **params, sampler=sampler)
-
-tensorise_data_fast = njit()(tensorise_data)
+    # sampler = torch.utils.data.RandomSampler(data_source=ds)
+    return torch.utils.data.DataLoader(ds, **params)
