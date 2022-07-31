@@ -85,7 +85,7 @@ class Parser {
       );
       await this.write(validOpenPrices, nGroups, i, nTestInterval);
 
-      console.log(`Parsing ${i + 1} / ${pathGroups.length}`);
+      console.log(`Parsing ${i + 1} / ${nGroups}`);
     }
     await io.writeJson(this.testPath, this.testData);
     console.log("Parsed");
