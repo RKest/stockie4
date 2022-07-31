@@ -5,7 +5,10 @@ interface JsonFileWriterOptions {
     isArray?: boolean;
 }
 
-export default class JsonFileWriter {
+export interface IJsonFileWriter {
+    writeArray: <T>(array: T[], close: boolean) => Promise<void>;
+}
+export default class JsonFileWriter implements IJsonFileWriter {
     path: string;
     isArray: boolean;
     doStrip: boolean;

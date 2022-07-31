@@ -1,6 +1,6 @@
 import * as std from "https://deno.land/std@0.148.0/path/mod.ts";
 import { io } from "../functional/io.ts";
-import JsonFileWriter from "../functional/large-json-writer.ts";
+import JsonFileWriter, { IJsonFileWriter } from "../functional/large-json-writer.ts";
 import { groupArray } from "../functional/miscellaneous.ts";
 
 export { Parser, PathFinder };
@@ -23,7 +23,7 @@ class PathFinder {
     for (let i = 0; i < noDirs; i++) {
       await this.traverse(this.template(i));
     }
-    if (!this.paths.length){
+    if (!this.paths.length) {
       Deno.exit(1);
     }
     return this.paths;
@@ -50,7 +50,8 @@ class PathFinder {
 }
 
 class Parser {
-  private jsonWriter = new JsonFileWriter(trainPath, { doStrip: true });
+  private trainJsonWriter = new JsonFileWriter(trainPath, { doStrip: true });
+  private testJsonWriter = new JsonFileWriter(testPath, { doStrip: true });
   private testData: number[][] = [];
 
   public get testPath() {
@@ -64,12 +65,14 @@ class Parser {
    * Takes a path of a txt file and returns price array
    */
   public async parse(pathArr: string[]) {
-    if (!this.isParsingNescessery()){
+    if (!this.isParsingNescessery()) {
       return;
     }
     const pathGroups = groupArray(pathArr);
+    const nGroups = pathGroups.length;
+    const nTestInterval = Math.round(N_TEST_SYMBOLS / nGroups);
 
-    for (let i = 0; i < pathGroups.length; i++) {
+    for (let i = 0; i < nGroups; i++) {
       const pathGroup = pathGroups[i];
       const fileStrings = await Promise.all(pathGroup.map(io.read));
       const openPrices = fileStrings.map((fileString) =>
@@ -80,22 +83,31 @@ class Parser {
       const validOpenPrices = openPrices.filter((openPricesArray) =>
         openPricesArray.length > 50
       );
-      if (validOpenPrices.length > 1) {
-        if (this.testData.length < N_TEST_SYMBOLS) {
-          const testPrice = validOpenPrices.pop()!;
-          this.testData.push(testPrice);
-        }
-      }
-      if (validOpenPrices.length > 0) {
-        await this.jsonWriter.writeArray(
-          validOpenPrices,
-          i === pathGroups.length - 1,
-        );
-      }
+      await this.write(validOpenPrices, nGroups, i, nTestInterval);
+
       console.log(`Parsing ${i + 1} / ${pathGroups.length}`);
     }
     await io.writeJson(this.testPath, this.testData);
     console.log("Parsed");
+  }
+
+  public async write(
+    prices: number[][],
+    nGroups: number,
+    i: number,
+    interval: number,
+    testWriter: IJsonFileWriter = this.testJsonWriter,
+    trainWriter: IJsonFileWriter = this.trainJsonWriter,
+  ) {
+    if (i % interval == 0) {
+      const isNextGroupTrain = (i + 1) % interval != 0;
+      const closing = i + interval >= nGroups || (isNextGroupTrain && i + 2 >= nGroups);
+      await testWriter.writeArray(prices, closing);
+    } else {
+      const isNextGroupTest = (i + 1) % interval == 0;
+      const closing = i + 1 >= nGroups || (isNextGroupTest && i + 2 >= nGroups);
+      await trainWriter.writeArray(prices, closing);
+    }
   }
 
   public async cleanup() {
@@ -103,7 +115,7 @@ class Parser {
     await io.remove(testPath);
   }
 
-  private async isParsingNescessery(){
+  private async isParsingNescessery() {
     return !await io.exists(this.testPath);
   }
 }
