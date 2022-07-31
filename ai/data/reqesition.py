@@ -32,7 +32,7 @@ def get_all_data_slices(c_vec_arr: np.ndarray, slice_len=51) -> np.ndarray:
     return return_arr
 
 
-def load_slope_sequential(train=False):
+def load_slope_sequential(train=False, just_one = False):
     loader_list = []
     path = TRAIN_DATA_PATH if train else TEST_DATA_PATH
     with open(path, 'r') as f:
@@ -53,6 +53,8 @@ def load_slope_sequential(train=False):
             loader_list.append(data)
             s_balancer.clear()
             data = []
+            if just_one:
+                break
     return loader_list
 
 # def save_slope_sequential(train=False, single_loader_len=2000):
