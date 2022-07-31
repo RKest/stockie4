@@ -6,7 +6,7 @@ import { groupArray } from "../functional/miscellaneous.ts";
 export { Parser, PathFinder };
 
 const __dirname = new URL(".", import.meta.url).pathname;
-const N_TEST_SYMBOLS = 50;
+const N_TEST_SYMBOLS = 89;
 const trainPath = __dirname + "_txtData.json";
 const testPath = __dirname + "_txtTestData.json";
 
@@ -70,7 +70,7 @@ class Parser {
     }
     const pathGroups = groupArray(pathArr);
     const nGroups = pathGroups.length;
-    const nTestInterval = Math.round(N_TEST_SYMBOLS / nGroups);
+    const nTestInterval = Math.round(nGroups / N_TEST_SYMBOLS);
 
     for (let i = 0; i < nGroups; i++) {
       const pathGroup = pathGroups[i];
